@@ -9,7 +9,7 @@
             "remotePath": "",
             "port": 2345,
             "host": "127.0.0.1",
-            "program": "D:/Code/Go/src/github.com/otrhon/cestovnidenik/server.go",
+            "program": "${workspaceRoot}/server.go",
             "env": {},
             "args": [],
             "showLog": true

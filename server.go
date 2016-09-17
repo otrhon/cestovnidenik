@@ -21,7 +21,7 @@ func main() {
 	r.GET("/test", uc.Test)
 	r.GET("/user/:id", uc.GetUser)
 	r.POST("/user", uc.CreateUser)
-	http.ListenAndServe("localhost:9090", r)
+	http.ListenAndServe(":9090", r)
 }
 
 func getSession() *mgo.Session {
