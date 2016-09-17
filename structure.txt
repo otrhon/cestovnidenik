@@ -1,0 +1,7 @@
+
+MENU
+    Kategorie: název např. Francie 2015
+        - Souhrn: krátký text
+        - Záznamy:
+            - Nadpis, např. Den první – cesta a neštěstí
+            - Obsah (html vč. obrázků)
