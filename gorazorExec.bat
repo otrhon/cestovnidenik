@@ -1,0 +1,1 @@
+%GOPATH%/bin/gorazor views/tmpl views/generated-code

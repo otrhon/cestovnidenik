@@ -24,6 +24,31 @@ func NewUserController(s *mgo.Session) *UserController {
 	return &UserController{s}
 }
 
+func (uc UserController) Flickr(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	fmt.Fprint(w, tmpl.Flickr())
+}
+
+func (uc UserController) Insert(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	fmt.Fprint(w, tmpl.Insert())
+}
+
+func (uc UserController) Save(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+
+	record := models.Record{
+		ID:      bson.NewObjectId(),
+		Heading: r.FormValue("heading"),
+		Content: r.FormValue("content"),
+	}
+
+	err := uc.session.DB("testing").C("records").Insert(record)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	http.Redirect(w, r, "/insert", http.StatusFound)
+}
+
 func (uc UserController) Test(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	fmt.Fprint(w, tmpl.Index())
 }

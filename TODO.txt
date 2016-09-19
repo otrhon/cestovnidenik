@@ -1,0 +1,15 @@
+- minifikace ccs, javascriptu, (html?)
+- editor pro vkládání
+    - wysiwyg editor
+    - go struktura
+    - autentizace
+    - flickr
+- UI (React?, Bootstrap?)
+    - mobile first
+    - menu, footer
+    - hlavní obsah
+- dodatečné zabezpečení
+- zpracování chyb
+- logování
+    - chyby
+    - návštěvnost
