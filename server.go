@@ -1,21 +1,22 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
-
-	mgo "gopkg.in/mgo.v2"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/otrhon/cestovnidenik/api"
 	"github.com/otrhon/cestovnidenik/api/controllers"
+	"github.com/otrhon/cestovnidenik/api/database"
 )
 
 func main() {
 	r := httprouter.New()
 	config := api.LoadConfig()
-	s := getSession(config.MongoDb)
-	uc := controllers.NewUserController(s)
+	database, session := database.NewMongoDb(config.MongoDb)
+	defer session.Close()
+
+	bc := controllers.NewBaseController(*database)
+	uc := controllers.NewUserController(*bc)
 
 	r.NotFound = api.NotFound{}
 	r.HandleMethodNotAllowed = false
@@ -29,14 +30,4 @@ func main() {
 
 	r.ServeFiles("/content/*filepath", http.Dir("content"))
 	http.ListenAndServe(":9090", r)
-}
-
-func getSession(connectionString string) *mgo.Session {
-	s, err := mgo.Dial(connectionString)
-
-	if err != nil {
-		fmt.Println("Unable to connect to MongoDb")
-	}
-
-	return s
 }

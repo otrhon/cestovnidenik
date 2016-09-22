@@ -5,23 +5,22 @@ import (
 	"fmt"
 	"net/http"
 
-	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/otrhon/cestovnidenik/api"
 	"github.com/otrhon/cestovnidenik/api/models"
-	"github.com/otrhon/cestovnidenik/views/code"
+	"github.com/otrhon/cestovnidenik/views/generated-code"
 )
 
 type (
 	UserController struct {
-		session *mgo.Session
+		BaseController
 	}
 )
 
-func NewUserController(s *mgo.Session) *UserController {
-	return &UserController{s}
+func NewUserController(bc BaseController) *UserController {
+	return &UserController{bc}
 }
 
 func (uc UserController) Flickr(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
@@ -40,7 +39,7 @@ func (uc UserController) Save(w http.ResponseWriter, r *http.Request, p httprout
 		Content: r.FormValue("content"),
 	}
 
-	err := uc.session.DB("testing").C("records").Insert(record)
+	err := uc.mongoDb.InsertRecord(record)
 
 	if err != nil {
 		fmt.Println(err)
@@ -61,11 +60,7 @@ func (uc UserController) GetUser(w http.ResponseWriter, r *http.Request, p httpr
 		return
 	}
 
-	oid := bson.ObjectIdHex(id)
-
-	u := models.User{}
-
-	err := uc.session.DB("testing").C("users").FindId(oid).One(&u)
+	u, err := uc.mongoDb.GetUser(id)
 
 	if err != nil {
 		api.NotFound{}.ServeHTTP(w, r)
@@ -84,9 +79,7 @@ func (uc UserController) CreateUser(w http.ResponseWriter, r *http.Request, p ht
 
 	json.NewDecoder(r.Body).Decode(&u)
 
-	u.ID = bson.NewObjectId()
-
-	uc.session.DB("testing").C("users").Insert(u)
+	uc.mongoDb.InsertUser(u)
 
 	uj, _ := json.Marshal(u)
 
