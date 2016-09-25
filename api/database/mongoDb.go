@@ -43,7 +43,7 @@ func (this MongoDb) InsertUser(user models.User) error {
 
 	user.ID = bson.NewObjectId()
 
-	return s.DB("testing").C("records").Insert(user)
+	return s.DB("testing").C("users").Insert(user)
 }
 
 func (this MongoDb) InsertRecord(record models.Record) error {

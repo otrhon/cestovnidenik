@@ -9,6 +9,7 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/otrhon/cestovnidenik/api"
+	"github.com/otrhon/cestovnidenik/api/database"
 	"github.com/otrhon/cestovnidenik/api/models"
 	"github.com/otrhon/cestovnidenik/views/generated-code"
 )
@@ -19,8 +20,13 @@ type (
 	}
 )
 
-func NewUserController(bc BaseController) *UserController {
-	return &UserController{bc}
+func NewUserController(mongo *database.MongoDb) *UserController {
+
+	uc := &UserController{}
+	uc.BaseController.mongoDb = mongo
+
+	return uc
+
 }
 
 func (uc UserController) Flickr(w http.ResponseWriter, r *http.Request, p httprouter.Params) {

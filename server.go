@@ -10,13 +10,13 @@ import (
 )
 
 func main() {
+
 	r := httprouter.New()
 	config := api.LoadConfig()
 	database, session := database.NewMongoDb(config.MongoDb)
 	defer session.Close()
 
-	bc := controllers.NewBaseController(*database)
-	uc := controllers.NewUserController(*bc)
+	uc := controllers.NewUserController(database)
 
 	r.NotFound = api.NotFound{}
 	r.HandleMethodNotAllowed = false

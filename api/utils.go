@@ -21,6 +21,8 @@ func LoadConfig() (conf Config) {
 	c := Config{}
 
 	file, _ := os.Open("conf.json")
+	defer file.Close()
+
 	json.NewDecoder(file).Decode(&c)
 
 	return c
