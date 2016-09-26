@@ -1,0 +1,1 @@
+%GOPATH%/bin/go-bindata -o content/_go-gen/bindata.go -pkg content content/css/ content/js/ 

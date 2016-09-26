@@ -7,42 +7,36 @@ import (
 
 	"gopkg.in/mgo.v2/bson"
 
-	"github.com/julienschmidt/httprouter"
-	"github.com/otrhon/cestovnidenik/api"
-	"github.com/otrhon/cestovnidenik/api/database"
+	"github.com/labstack/echo"
 	"github.com/otrhon/cestovnidenik/api/models"
-	"github.com/otrhon/cestovnidenik/views/generated-code"
+	"github.com/otrhon/cestovnidenik/views/_go-gen"
 )
 
 type (
 	UserController struct {
-		BaseController
+		*BaseController
 	}
 )
 
-func NewUserController(mongo *database.MongoDb) *UserController {
-
-	uc := &UserController{}
-	uc.BaseController.mongoDb = mongo
-
+func NewUserController(bc *BaseController) *UserController {
+	uc := &UserController{bc}
 	return uc
-
 }
 
-func (uc UserController) Flickr(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	fmt.Fprint(w, tmpl.Flickr())
+func (uc UserController) Flickr(c echo.Context) error {
+	return uc.html(c, tmpl.Flickr())
 }
 
-func (uc UserController) Insert(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	fmt.Fprint(w, tmpl.Insert())
+func (uc UserController) Insert(c echo.Context) error {
+	return uc.html(c, tmpl.Insert())
 }
 
-func (uc UserController) Save(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+func (uc UserController) Save(c echo.Context) error {
 
 	record := models.Record{
 		ID:      bson.NewObjectId(),
-		Heading: r.FormValue("heading"),
-		Content: r.FormValue("content"),
+		Heading: c.FormValue("heading"),
+		Content: c.FormValue("content"),
 	}
 
 	err := uc.mongoDb.InsertRecord(record)
@@ -51,45 +45,39 @@ func (uc UserController) Save(w http.ResponseWriter, r *http.Request, p httprout
 		fmt.Println(err)
 	}
 
-	http.Redirect(w, r, "/insert", http.StatusFound)
+	return c.Redirect(http.StatusFound, "/insert")
 }
 
-func (uc UserController) Test(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	fmt.Fprint(w, tmpl.Index())
+func (uc UserController) Test(c echo.Context) error {
+	return uc.html(c, tmpl.Index())
 }
 
-func (uc UserController) GetUser(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	id := p.ByName("id")
+func (uc UserController) GetUser(c echo.Context) error {
+	id := c.Param("id")
 
 	if !bson.IsObjectIdHex(id) {
-		api.NotFound{}.ServeHTTP(w, r)
-		return
+		return echo.NewHTTPError(http.StatusNotFound)
 	}
 
 	u, err := uc.mongoDb.GetUser(id)
 
 	if err != nil {
-		api.NotFound{}.ServeHTTP(w, r)
-		return
+		return echo.NewHTTPError(http.StatusNotFound)
 	}
 
 	uj, _ := json.Marshal(u)
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
-	fmt.Fprintf(w, "%s", uj)
+	return uc.json(c, uj)
 }
 
-func (uc UserController) CreateUser(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+func (uc UserController) CreateUser(c echo.Context) error {
 	u := models.User{}
 
-	json.NewDecoder(r.Body).Decode(&u)
+	json.NewDecoder(c.Request().Body()).Decode(&u)
 
 	uc.mongoDb.InsertUser(u)
 
 	uj, _ := json.Marshal(u)
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
-	fmt.Fprintf(w, "%s", uj)
+	return uc.json(c, uj)
+
 }

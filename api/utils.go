@@ -2,19 +2,15 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"os"
+
+	"github.com/labstack/echo"
 )
 
-type NotFound struct{}
 type Config struct {
+	Debug   bool
 	MongoDb string
-}
-
-func (n NotFound) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(404)
-	fmt.Fprint(w, "custom 404")
 }
 
 func LoadConfig() (conf Config) {
@@ -26,4 +22,25 @@ func LoadConfig() (conf Config) {
 	json.NewDecoder(file).Decode(&c)
 
 	return c
+}
+
+func MyHTTPErrorHandler(err error, c echo.Context) {
+	e := c.Echo()
+	code := http.StatusInternalServerError
+	msg := http.StatusText(code)
+	if he, ok := err.(*echo.HTTPError); ok {
+		code = he.Code
+		msg = he.Message
+	}
+	if e.Debug() {
+		msg = err.Error()
+	}
+	if !c.Response().Committed() {
+		if c.Request().Method() == echo.HEAD { // Issue #608
+			c.NoContent(code)
+		} else {
+			c.String(code, msg)
+		}
+	}
+	e.Logger().Error(err)
 }

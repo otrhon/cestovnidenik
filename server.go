@@ -1,9 +1,9 @@
 package main
 
 import (
-	"net/http"
-
-	"github.com/julienschmidt/httprouter"
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/engine/standard"
+	"github.com/labstack/echo/middleware"
 	"github.com/otrhon/cestovnidenik/api"
 	"github.com/otrhon/cestovnidenik/api/controllers"
 	"github.com/otrhon/cestovnidenik/api/database"
@@ -11,23 +11,38 @@ import (
 
 func main() {
 
-	r := httprouter.New()
 	config := api.LoadConfig()
+	e := echo.New()
+	e.Use(middleware.GzipWithConfig(middleware.GzipConfig{
+		Level: 5,
+	}))
+	e.Use(middleware.Secure())
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+	e.SetDebug(config.Debug)
+	e.SetHTTPErrorHandler(api.MyHTTPErrorHandler)
+
 	database, session := database.NewMongoDb(config.MongoDb)
 	defer session.Close()
 
-	uc := controllers.NewUserController(database)
+	bc := controllers.NewBaseController(database)
+	uc := controllers.NewUserController(bc)
+	controllers.InitStaticController(bc, e)
 
-	r.NotFound = api.NotFound{}
-	r.HandleMethodNotAllowed = false
+	g := e.Group("/admin")
+	g.Use(middleware.BasicAuth(func(username, password string) bool {
+		if username == "joe" && password == "secret" {
+			return true
+		}
+		return false
+	}))
 
-	r.GET("/test", uc.Test)
-	r.GET("/flickr", uc.Flickr)
-	r.GET("/insert", uc.Insert)
-	r.GET("/user/:id", uc.GetUser)
-	r.POST("/user", uc.CreateUser)
-	r.POST("/save", uc.Save)
+	g.GET("/test", uc.Test)
+	e.GET("/flickr", uc.Flickr)
+	e.GET("/insert", uc.Insert)
+	e.GET("/user/:id", uc.GetUser)
+	e.POST("/user", uc.CreateUser)
+	e.POST("/save", uc.Save)
 
-	r.ServeFiles("/content/*filepath", http.Dir("content"))
-	http.ListenAndServe(":9090", r)
+	e.Run(standard.New(":9090"))
 }

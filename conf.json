@@ -1,0 +1,5 @@
+{
+    "Debug" : true,
+    "MongoDb" : "mongodb://localhost"
+
+}
