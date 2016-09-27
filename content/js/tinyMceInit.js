@@ -33,3 +33,6 @@ function toScreenHeight(minus) {
         height = document.body.clientHeight;
     return height - minus;
 }
+function setHeight() {
+    document.getElementById('flickrPhotos').style.height = toScreenHeight(120) + 'px';
+}

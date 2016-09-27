@@ -26,14 +26,18 @@ this.tinymce.init({
 });
 
 function toScreenHeight(minus) {
-    var height;
+  var height;
 
-    if (typeof(window.innerHeight) == "number") //non-IE
-        height = window.innerHeight;
-    else if (document.documentElement && document.documentElement.clientHeight) //IE 6+ strict mode
-        height = document.documentElement.clientHeight;
-    else if (document.body && document.body.clientHeight) //IE 4 compatible / IE quirks mode
-        height = document.body.clientHeight;
+  if (typeof (window.innerHeight) == "number") //non-IE
+    height = window.innerHeight;
+  else if (document.documentElement && document.documentElement.clientHeight) //IE 6+ strict mode
+    height = document.documentElement.clientHeight;
+  else if (document.body && document.body.clientHeight) //IE 4 compatible / IE quirks mode
+    height = document.body.clientHeight;
 
-    return height - minus
+  return height - minus
+}
+
+function setHeight() {
+  document.getElementById('flickrPhotos').style.height = toScreenHeight(120) + 'px';
 }
