@@ -1,9 +1,9 @@
-- minifikace ccs, javascriptu, (html?)
+***- minifikace ccs, javascriptu, html + GZIP
 - editor pro vkládání
-    - wysiwyg editor
-    - go struktura
-    - autentizace
-    - flickr
+    ***- wysiwyg editor
+    ***- go struktura
+    ***- autentizace
+    **- flickr
 - UI (React?, Bootstrap?)
     - mobile first
     - menu, footer
