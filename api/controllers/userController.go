@@ -45,7 +45,7 @@ func (uc UserController) Save(c echo.Context) error {
 		fmt.Println(err)
 	}
 
-	return c.Redirect(http.StatusFound, "/insert")
+	return c.Redirect(http.StatusFound, "/flickr")
 }
 
 func (uc UserController) Test(c echo.Context) error {

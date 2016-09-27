@@ -2,10 +2,11 @@ this.tinymce.init({
     selector: 'textarea',
     language_url: '/content/js/tinyMce-cs_CZ.js',
     menubar: false,
-    height: '500px',
     resize: false,
     plugins: ["table ", "code", "autolink", "link", "save"],
     width: '100%',
+    save_enablewhendirty: false,
+    height: toScreenHeight(120),
     block_formats: 'Paragraph=p;Header 1=h1;Header 2=h2;Header 3=h3',
     toolbar: 'save | undo redo | formatselect bold italic underline strikethrough | link flickrImage | alignleft aligncenter alignright | bullist numlist table | code',
     setup: function (editor) {
@@ -22,3 +23,13 @@ this.tinymce.init({
         });
     }
 });
+function toScreenHeight(minus) {
+    var height;
+    if (typeof (window.innerHeight) == "number")
+        height = window.innerHeight;
+    else if (document.documentElement && document.documentElement.clientHeight)
+        height = document.documentElement.clientHeight;
+    else if (document.body && document.body.clientHeight)
+        height = document.body.clientHeight;
+    return height - minus;
+}

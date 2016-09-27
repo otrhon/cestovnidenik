@@ -31,14 +31,13 @@ func main() {
 
 	g := e.Group("/admin")
 	g.Use(middleware.BasicAuth(func(username, password string) bool {
-		if username == "joe" && password == "secret" {
+		if username == "bara" && password == "test" {
 			return true
 		}
 		return false
 	}))
 
-	g.GET("/test", uc.Test)
-	e.GET("/flickr", uc.Flickr)
+	g.GET("/edit", uc.Flickr)
 	e.GET("/insert", uc.Insert)
 	e.GET("/user/:id", uc.GetUser)
 	e.POST("/user", uc.CreateUser)

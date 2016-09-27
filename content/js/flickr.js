@@ -20,7 +20,7 @@ function getJson(album) {
     if (album == "0") {
         return;
     }
-    var src = "https://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=5a96fe21b2b6fce8d8f8278a2eb0286f&photoset_id=" + album + "&user_id=131912190%40N07&extras=url_s,url_l&format=json&jsoncallback=getPhotos";
+    var src = "https://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=5a96fe21b2b6fce8d8f8278a2eb0286f&photoset_id=" + album + "&user_id=131912190%40N07&extras=url_s,url_l,url_m&format=json&jsoncallback=getPhotos";
     gscript = document.createElement("script");
     gscript.src = src;
     document.body.appendChild(gscript);
@@ -45,13 +45,16 @@ function getAlbums(data) {
         document.querySelector("#flickrAlbums").innerHTML = html;
     }
 }
+function add(url) {
+    this.tinymce.activeEditor.execCommand("mceInsertContent", false, "<img style='display: block; padding: 5px; margin: 0 auto' src='" + url + "'>");
+}
 function getPhotos(data) {
     if (data && data.photoset) {
         var items = data.photoset.photo;
         var html = "<div class='images'>";
         for (var i = 0; i < items.length; ++i) {
             var item = items[i];
-            html += "<a target='_blank' href='" + item.url_l + "'><img width='" + item.width_s + "' height='" + item.height_s + "' src='" + item.url_s + "' alt='' /></a>";
+            html += "<a href='#' onclick='add(\"" + item.url_m + "\")'><img width='" + item.width_s + "' height='" + item.height_s + "' src='" + item.url_s + "' alt='' /></a>";
         }
         html += "</div>";
         document.querySelector("#flickrPhotos").innerHTML = html;
